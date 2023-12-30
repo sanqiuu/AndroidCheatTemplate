@@ -17,6 +17,7 @@ void* get_createNativeWindow() {
     void *handle = nullptr;// 动态库方案
     if (!handle) {
 //        handle = dlblob(&native_surface_test, sizeof(native_surface_test)); // 测试
+        printf("android api level:%d\n", get_android_api_level());
         if (get_android_api_level() == 33) { // 安卓13支持
             exec_native_surface("settings put global block_untrusted_touches 0");
 #ifdef __aarch64__
@@ -61,15 +62,49 @@ void* get_createNativeWindow() {
             exit(0);
         }
         
-        //funcPointer.func_more_createNativeWindow = dlsym(handle, "_Z18createNativeWindowPKcjjjjb");
-        void *sy = dlsym(handle, "_Z18createNativeWindowPKcjjb");
-        if (sy != nullptr) {
-            return sy;
-        } else {
-            printf("createNativeWindow _ null~\n");           
-            exit(0);
-        }
-    }    
+        void *sy = dlsym(handle, "_Z18createNativeWindowPKcjj");
+    if (sy != nullptr) {
+        return sy;
+    }else{
+		sy = dlsym(handle, "_Z18createNativeWindowPKcjjb");      
+		if (sy != nullptr) {
+      		return sy;
+   		}else{
+       		sy = dlsym(handle, "_Z14getDisplayInfov");	
+			if (sy != nullptr) {
+      	  		return sy;
+    		}else{
+        		sy = dlsym(handle, "_Z12setSurfaceWHjj");
+				if (sy != nullptr) {
+        			return sy;
+    			}else{
+        			sy = dlsym(handle, "_Z10initRecordPKcfjj");
+					if (sy != nullptr) {
+        				return sy;
+   	 				}else{
+        				sy = dlsym(handle, "_Z9runRecordPbPFvPhmE");
+						if (sy != nullptr) {
+        					return sy;
+    					}else{
+        					sy = dlsym(handle, "_Z10stopRecordv");
+							if (sy != nullptr) {
+        						return sy;
+    						}else{
+        						sy = dlsym(handle, "_Z21getRecordNativeWindowv");						
+								if (sy != nullptr) {
+        							return sy;
+								}else{
+									printf("createNativeWindow _ null~\n");           
+    								exit(0);
+								}
+							}
+						}
+					}
+				}
+			}
+		}       
+	}
+	}
 }
 
 /**

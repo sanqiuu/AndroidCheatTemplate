@@ -1479,14 +1479,6 @@ void ImDrawList::AddTriangleFilled(const ImVec2& p1, const ImVec2& p2, const ImV
     PathFillConvex(col);
 }
 
-void ImDrawList::AddCircleArc(const ImVec2& center, float radius, const ImVec2& radian, ImU32 col, int num_segments, float thickness)
-{
-    if ((col & IM_COL32_A_MASK) == 0 || radius <= 0.0f)
-        return;
-    PathArcTo(center, radius, radian.x*IM_PI/180, radian.y*IM_PI/180, num_segments);
-    PathStroke(col, 0, thickness);
-}
-
 void ImDrawList::AddCircle(const ImVec2& center, float radius, ImU32 col, int num_segments, float thickness)
 {
     if ((col & IM_COL32_A_MASK) == 0 || radius <= 0.0f)
