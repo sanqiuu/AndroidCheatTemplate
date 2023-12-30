@@ -672,19 +672,15 @@ int main()
     screen_config();
     init_screen_x = screen_x + screen_y;
     init_screen_y = screen_y + screen_x;
-	
 	new std::thread(hack_thread);
-	
     if (!init_egl(init_screen_x, init_screen_y)) {
         exit(0);
     }
-	
     ImGui_init();
 	
 	usleep(5000);
     int x, y;
 	Touch_Init(&x,&y);  // 监听
-
 	sleep(1);
 	
 	temp = tempRead;
@@ -700,23 +696,16 @@ int main()
     puts("\033[1;33;40mQQ交流群 609690497\033[0m\n");
     puts("\033[1;33;40mTG @guiprofl\033[0m");
     puts("\033[33;31m**************************************\033[0m");   	*/
-	
 	new std::thread(AimBotAuto);
-
 	NumIoLoad("FlyBlueSaveNum");
-	
 	RenderingFPS.SetFps(NumIo[12]);
 	RenderingFPS.AotuFPS_init();
 	RenderingFPS.setAffinity();
-	
 	ImGuiIO& io = ImGui::GetIO();
-	
 	ImGui_ImplOpenGL3_NewFrame();
 	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	
     bool flag = true;
-	
 	size_t length = (logoDataBase64.length() + 1) / 4 * 3;
 	unsigned char *data = base64_decode((unsigned char *)logoDataBase64.c_str());
 	imageButton.textureId = createTexturePNGFro(data, length);
@@ -739,7 +728,6 @@ int main()
 	
 
 	sleep(1);
-	
     while (flag) {
   
         Rendering(&flag);    
@@ -948,177 +936,197 @@ void Draw_Main(ImDrawList *Draw)
         Draw->AddLine({NumIo[1], NumIo[2] + 100}, {NumIo[1], NumIo[2] - 100}, ImColor(ImVec4(255/255.f, 255/255.f, 258/255.f, 0.5f)), 2);
     }
 	
-	for (int i = 0; i < temp->mPlayerArray.Count; i ++)
-	{
-		if (temp->mPlayerArray.mPlayer[i].Distance > NumIo[17])
-			continue;		
-			
-		Vec2 Radar = {(temp->MyPos.x - temp->mPlayerArray.mPlayer[i].Pos.x) / NumIo[16], (temp->MyPos.y - temp->mPlayerArray.mPlayer[i].Pos.y) / NumIo[16]};
-			
-		if (DrawIo[7]) {     
-			// 雷达
-            if (NumIo[1] + Radar.x >= NumIo[1] - 100 && NumIo[1] + Radar.x <= NumIo[1] + 100 && NumIo[2] + Radar.y >= NumIo[2] - 100 && NumIo[2] + Radar.y <= NumIo[2] + 100) {              
-                if (temp->mPlayerArray.mPlayer[i].IsBot) {
-                    Draw->AddCircleFilled({NumIo[1] + Radar.x, NumIo[2] + Radar.y}, {20}, ImColor(255, 255, 255));
-					string sdt = "AI";
-					auto textSize = ImGui::CalcTextSize(sdt.c_str(), 0, 25);
-                	Draw->AddText(NULL, 25, {NumIo[1] + Radar.x - textSize.x / 2, NumIo[2] + Radar.y - textSize.y * 0.45}, ImColor(50, 50, 50), sdt.c_str());
-                } else {
-					tm = 150.f/255.f;
-                    Draw->AddCircleFilled({NumIo[1] + Radar.x, NumIo[2] + Radar.y}, {20}, ImColor(arr[temp->mPlayerArray.mPlayer[i].TeamID % length]));
-					string sdt = to_string((int) temp->mPlayerArray.mPlayer[i].TeamID);    
-					auto textSize = ImGui::CalcTextSize(sdt.c_str(), 0, 25);
-                	Draw->AddText(NULL, 25, {NumIo[1] + Radar.x - textSize.x / 2, NumIo[2] + Radar.y - textSize.y * 0.45}, ImColor(255, 255, 255), sdt.c_str());
-            	}
-      		}
-        }
-			
-		if (temp->mPlayerArray.mPlayer[i].w > 0 && temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x > 0 && temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x < screen_x && temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y > 0 && temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y < screen_y)
-		{		
-			if (DrawIo[20])
-            {              
-				strcpy(Aim[AimCount].Name, temp->mPlayerArray.mPlayer[i].PlayerName);
-            	Aim[AimCount].WodDistance = temp->mPlayerArray.mPlayer[i].Distance;   
-                Aim[AimCount].AimMovement = temp->mPlayerArray.mPlayer[i].Predict;
-				if (NumIo[8] == 1.0){                                 
-                    Aim[AimCount].ObjAim = temp->mPlayerArray.mPlayer[i].Head.Pos;                            
-                    Aim[AimCount].ScreenDistance = sqrt(pow(screen_x / 2 - temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, 2) + pow(screen_y / 2 - temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y, 2));
-                } else if (NumIo[8] == 2.0){                                 
-                    Aim[AimCount].ObjAim = temp->mPlayerArray.mPlayer[i].Chest.Pos;                            
-                    Aim[AimCount].ScreenDistance = sqrt(pow(screen_x / 2 - temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.x, 2) + pow(screen_y / 2 - temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y, 2));
-                } else if (NumIo[8] == 3.0){                                 
-                    Aim[AimCount].ObjAim = temp->mPlayerArray.mPlayer[i].Pelvis.Pos;                                                 
-                    Aim[AimCount].ScreenDistance = sqrt(pow(screen_x / 2 - temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.x, 2) + pow(screen_y / 2 - temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y, 2));
-                } else {
-					Aim[AimCount].ObjAim = temp->mPlayerArray.mPlayer[i].Head.Pos;                            
-                    Aim[AimCount].ScreenDistance = sqrt(pow(screen_x / 2 - temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, 2) + pow(screen_y / 2 - temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y, 2));
-				}           
-                AimCount++;
-            }
-			
-			left  = temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x - temp->mPlayerArray.mPlayer[i].w * 0.6;
-            right = temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x + temp->mPlayerArray.mPlayer[i].w * 0.6;
-			
-			if (!temp->mPlayerArray.mPlayer[i].Head.Pos.x) {
-				top1 = temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y - temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y;
-			} else {
-				top1 = temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y - temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y;
-			}
-			
-            top  = temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y - top1 - temp->mPlayerArray.mPlayer[i].w / 5;    
-            
-            if (temp->mPlayerArray.mPlayer[i].Left_Ankle.ScreenPos.y < temp->mPlayerArray.mPlayer[i].Right_Ankle.ScreenPos.y) {
-                bottom = temp->mPlayerArray.mPlayer[i].Right_Ankle.ScreenPos.y + temp->mPlayerArray.mPlayer[i].w / 10;
-            } else {
-                bottom = temp->mPlayerArray.mPlayer[i].Left_Ankle.ScreenPos.y  + temp->mPlayerArray.mPlayer[i].w / 10;
-            }		
-				
-			if (DrawIo[1]) {
-				// 方框
-				float box_width = 0;
-				float box_width_1 = fabs(temp->mPlayerArray.mPlayer[i].Left_Shoulder.Pos.x - temp->mPlayerArray.mPlayer[i].Right_Shoulder.Pos.x) + fabs(temp->mPlayerArray.mPlayer[i].Left_Shoulder.Pos.y - temp->mPlayerArray.mPlayer[i].Right_Shoulder.Pos.y);
-				float box_width_2 = fabs(temp->mPlayerArray.mPlayer[i].Left_Ankle.Pos.x - temp->mPlayerArray.mPlayer[i].Head.Pos.x) + fabs(temp->mPlayerArray.mPlayer[i].Left_Ankle.Pos.y - temp->mPlayerArray.mPlayer[i].Head.Pos.y);
-				float box_width_3 = fabs(temp->mPlayerArray.mPlayer[i].Pelvis.Pos.x - temp->mPlayerArray.mPlayer[i].Head.Pos.x) + fabs(temp->mPlayerArray.mPlayer[i].Pelvis.Pos.y - temp->mPlayerArray.mPlayer[i].Head.Pos.y);				
-				Vec3 Pass = Vec3();
-				if (temp->mPlayerArray.mPlayer[i].Left_Ankle.Pos.z > temp->mPlayerArray.mPlayer[i].Right_Ankle.Pos.z) {
-					Pass = temp->mPlayerArray.mPlayer[i].Left_Ankle.Pos;
-				} else {
-					Pass = temp->mPlayerArray.mPlayer[i].Right_Ankle.Pos;
-				}
-				if (box_width_3 > box_width_1) {
-					box_width = box_width_2;
-				} else {
-					box_width = box_width_1;
-				}
-				if (NumIo[15]) {
-					if (temp->mPlayerArray.mPlayer[i].IsBot) {                
-						Draw3DBox(temp->mPlayerArray.mPlayer[i].Pos, Pass, temp->mPlayerArray.mPlayer[i].Head.Pos, 0, 10 + box_width, BotBoxColor, BotBoxSize, true);
-					} else {
-						Draw3DBox(temp->mPlayerArray.mPlayer[i].Pos, Pass, temp->mPlayerArray.mPlayer[i].Head.Pos, 0, 10 + box_width, BoxColor, BoxSize, false);
-					}
-				} else {
-                	if (temp->mPlayerArray.mPlayer[i].IsBot) {                
-						Draw->AddRect({left, top}, {right, bottom}, BotBoxColor, {0}, 0, {BotBoxSize});          			
-						Draw->AddRectFilled({left, top}, {right, bottom}, BotBoxblackColor);          				
-                	} else {                       
-                    	Draw->AddRect({left, top}, {right, bottom}, BoxColor, {0}, 0, {BoxSize});       
-						Draw->AddRectFilled({left, top}, {right, bottom}, BoxblackColor);          				
-                	}        
-				}
-            }
-            
-            if (DrawIo[2]) {
-                // 射线
-                if (temp->mPlayerArray.mPlayer[i].IsBot)
-                {
-                    Draw->AddLine({screen_x / 2 , 0}, {temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y}, BotLineColor, {BotLineSize});  
-                }else{
-                    Draw->AddLine({screen_x / 2 , 0}, {temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y}, LineColor, {LineSize});  
+    if (temp) {
+        for (int i = 0; i < temp->mPlayerArray.Count; i++)
+        {
+            if (temp->mPlayerArray.mPlayer[i].Distance > NumIo[17])
+                continue;
+
+            Vec2 Radar = { (temp->MyPos.x - temp->mPlayerArray.mPlayer[i].Pos.x) / NumIo[16], (temp->MyPos.y - temp->mPlayerArray.mPlayer[i].Pos.y) / NumIo[16] };
+
+            if (DrawIo[7]) {
+                // 雷达
+                if (NumIo[1] + Radar.x >= NumIo[1] - 100 && NumIo[1] + Radar.x <= NumIo[1] + 100 && NumIo[2] + Radar.y >= NumIo[2] - 100 && NumIo[2] + Radar.y <= NumIo[2] + 100) {
+                    if (temp->mPlayerArray.mPlayer[i].IsBot) {
+                        Draw->AddCircleFilled({ NumIo[1] + Radar.x, NumIo[2] + Radar.y }, { 20 }, ImColor(255, 255, 255));
+                        string sdt = "AI";
+                        auto textSize = ImGui::CalcTextSize(sdt.c_str(), 0, 25);
+                        Draw->AddText(NULL, 25, { NumIo[1] + Radar.x - textSize.x / 2, NumIo[2] + Radar.y - textSize.y * 0.45 }, ImColor(50, 50, 50), sdt.c_str());
+                    }
+                    else {
+                        tm = 150.f / 255.f;
+                        Draw->AddCircleFilled({ NumIo[1] + Radar.x, NumIo[2] + Radar.y }, { 20 }, ImColor(arr[temp->mPlayerArray.mPlayer[i].TeamID % length]));
+                        string sdt = to_string((int)temp->mPlayerArray.mPlayer[i].TeamID);
+                        auto textSize = ImGui::CalcTextSize(sdt.c_str(), 0, 25);
+                        Draw->AddText(NULL, 25, { NumIo[1] + Radar.x - textSize.x / 2, NumIo[2] + Radar.y - textSize.y * 0.45 }, ImColor(255, 255, 255), sdt.c_str());
+                    }
                 }
             }
-			
-			if (DrawIo[3]) {
-				if (temp->mPlayerArray.mPlayer[i].IsBot) {
-					BoneDrawColor = BotBoneColor;
-				} else {
-					BoneDrawColor = BoneColor;
-				}
-                // 骨骼
-				if (temp->mPlayerArray.mPlayer[i].Head.CanSee) {
-                	Draw->AddCircle({temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].w / 14, BoneColor, BoneSize);    
-				} else {
-					Draw->AddCircle({temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].w / 14, ImColor(0, 255, 0), BotBoneSize);    
-				}
-                DrawBone({temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Chest.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Pelvis.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Left_Shoulder.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Shoulder.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Left_Shoulder.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Right_Shoulder.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Shoulder.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Right_Shoulder.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Left_Shoulder.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Shoulder.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Left_Elbow.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Elbow.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Left_Elbow.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Right_Shoulder.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Shoulder.ScreenPos.y},{temp->mPlayerArray.mPlayer[i].Right_Elbow.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Elbow.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Right_Elbow.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Left_Elbow.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Elbow.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Left_Wrist.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Wrist.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Left_Wrist.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Right_Elbow.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Elbow.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Right_Wrist.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Wrist.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Right_Wrist.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Left_Thigh.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Thigh.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Left_Thigh.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Right_Thigh.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Thigh.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Right_Thigh.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Left_Thigh.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Thigh.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Left_Knee.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Knee.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Left_Knee.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Right_Thigh.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Thigh.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Right_Knee.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Knee.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Right_Knee.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Left_Knee.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Knee.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Left_Ankle.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Ankle.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Left_Ankle.CanSee);
-                DrawBone({temp->mPlayerArray.mPlayer[i].Right_Knee.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Knee.ScreenPos.y}, {temp->mPlayerArray.mPlayer[i].Right_Ankle.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Ankle.ScreenPos.y}, temp->mPlayerArray.mPlayer[i].Right_Ankle.CanSee);                                  
+
+            if (temp->mPlayerArray.mPlayer[i].w > 0 && temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x > 0 && temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x < screen_x && temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y > 0 && temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y < screen_y)
+            {
+                if (DrawIo[20])
+                {
+                    strcpy(Aim[AimCount].Name, temp->mPlayerArray.mPlayer[i].PlayerName);
+                    Aim[AimCount].WodDistance = temp->mPlayerArray.mPlayer[i].Distance;
+                    Aim[AimCount].AimMovement = temp->mPlayerArray.mPlayer[i].Predict;
+                    if (NumIo[8] == 1.0) {
+                        Aim[AimCount].ObjAim = temp->mPlayerArray.mPlayer[i].Head.Pos;
+                        Aim[AimCount].ScreenDistance = sqrt(pow(screen_x / 2 - temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, 2) + pow(screen_y / 2 - temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y, 2));
+                    }
+                    else if (NumIo[8] == 2.0) {
+                        Aim[AimCount].ObjAim = temp->mPlayerArray.mPlayer[i].Chest.Pos;
+                        Aim[AimCount].ScreenDistance = sqrt(pow(screen_x / 2 - temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.x, 2) + pow(screen_y / 2 - temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y, 2));
+                    }
+                    else if (NumIo[8] == 3.0) {
+                        Aim[AimCount].ObjAim = temp->mPlayerArray.mPlayer[i].Pelvis.Pos;
+                        Aim[AimCount].ScreenDistance = sqrt(pow(screen_x / 2 - temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.x, 2) + pow(screen_y / 2 - temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y, 2));
+                    }
+                    else {
+                        Aim[AimCount].ObjAim = temp->mPlayerArray.mPlayer[i].Head.Pos;
+                        Aim[AimCount].ScreenDistance = sqrt(pow(screen_x / 2 - temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, 2) + pow(screen_y / 2 - temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y, 2));
+                    }
+                    AimCount++;
+                }
+
+                left = temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x - temp->mPlayerArray.mPlayer[i].w * 0.6;
+                right = temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x + temp->mPlayerArray.mPlayer[i].w * 0.6;
+
+                if (!temp->mPlayerArray.mPlayer[i].Head.Pos.x) {
+                    top1 = temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y - temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y;
+                }
+                else {
+                    top1 = temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y - temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y;
+                }
+
+                top = temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y - top1 - temp->mPlayerArray.mPlayer[i].w / 5;
+
+                if (temp->mPlayerArray.mPlayer[i].Left_Ankle.ScreenPos.y < temp->mPlayerArray.mPlayer[i].Right_Ankle.ScreenPos.y) {
+                    bottom = temp->mPlayerArray.mPlayer[i].Right_Ankle.ScreenPos.y + temp->mPlayerArray.mPlayer[i].w / 10;
+                }
+                else {
+                    bottom = temp->mPlayerArray.mPlayer[i].Left_Ankle.ScreenPos.y + temp->mPlayerArray.mPlayer[i].w / 10;
+                }
+
+                if (DrawIo[1]) {
+                    // 方框
+                    float box_width = 0;
+                    float box_width_1 = fabs(temp->mPlayerArray.mPlayer[i].Left_Shoulder.Pos.x - temp->mPlayerArray.mPlayer[i].Right_Shoulder.Pos.x) + fabs(temp->mPlayerArray.mPlayer[i].Left_Shoulder.Pos.y - temp->mPlayerArray.mPlayer[i].Right_Shoulder.Pos.y);
+                    float box_width_2 = fabs(temp->mPlayerArray.mPlayer[i].Left_Ankle.Pos.x - temp->mPlayerArray.mPlayer[i].Head.Pos.x) + fabs(temp->mPlayerArray.mPlayer[i].Left_Ankle.Pos.y - temp->mPlayerArray.mPlayer[i].Head.Pos.y);
+                    float box_width_3 = fabs(temp->mPlayerArray.mPlayer[i].Pelvis.Pos.x - temp->mPlayerArray.mPlayer[i].Head.Pos.x) + fabs(temp->mPlayerArray.mPlayer[i].Pelvis.Pos.y - temp->mPlayerArray.mPlayer[i].Head.Pos.y);
+                    Vec3 Pass = Vec3();
+                    if (temp->mPlayerArray.mPlayer[i].Left_Ankle.Pos.z > temp->mPlayerArray.mPlayer[i].Right_Ankle.Pos.z) {
+                        Pass = temp->mPlayerArray.mPlayer[i].Left_Ankle.Pos;
+                    }
+                    else {
+                        Pass = temp->mPlayerArray.mPlayer[i].Right_Ankle.Pos;
+                    }
+                    if (box_width_3 > box_width_1) {
+                        box_width = box_width_2;
+                    }
+                    else {
+                        box_width = box_width_1;
+                    }
+                    if (NumIo[15]) {
+                        if (temp->mPlayerArray.mPlayer[i].IsBot) {
+                            Draw3DBox(temp->mPlayerArray.mPlayer[i].Pos, Pass, temp->mPlayerArray.mPlayer[i].Head.Pos, 0, 10 + box_width, BotBoxColor, BotBoxSize, true);
+                        }
+                        else {
+                            Draw3DBox(temp->mPlayerArray.mPlayer[i].Pos, Pass, temp->mPlayerArray.mPlayer[i].Head.Pos, 0, 10 + box_width, BoxColor, BoxSize, false);
+                        }
+                    }
+                    else {
+                        if (temp->mPlayerArray.mPlayer[i].IsBot) {
+                            Draw->AddRect({ left, top }, { right, bottom }, BotBoxColor, { 0 }, 0, { BotBoxSize });
+                            Draw->AddRectFilled({ left, top }, { right, bottom }, BotBoxblackColor);
+                        }
+                        else {
+                            Draw->AddRect({ left, top }, { right, bottom }, BoxColor, { 0 }, 0, { BoxSize });
+                            Draw->AddRectFilled({ left, top }, { right, bottom }, BoxblackColor);
+                        }
+                    }
+                }
+
+                if (DrawIo[2]) {
+                    // 射线
+                    if (temp->mPlayerArray.mPlayer[i].IsBot)
+                    {
+                        Draw->AddLine({ screen_x / 2 , 0 }, { temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y }, BotLineColor, { BotLineSize });
+                    }
+                    else {
+                        Draw->AddLine({ screen_x / 2 , 0 }, { temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y }, LineColor, { LineSize });
+                    }
+                }
+
+                if (DrawIo[3]) {
+                    if (temp->mPlayerArray.mPlayer[i].IsBot) {
+                        BoneDrawColor = BotBoneColor;
+                    }
+                    else {
+                        BoneDrawColor = BoneColor;
+                    }
+                    // 骨骼
+                    if (temp->mPlayerArray.mPlayer[i].Head.CanSee) {
+                        Draw->AddCircle({ temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].w / 14, BoneColor, BoneSize);
+                    }
+                    else {
+                        Draw->AddCircle({ temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].w / 14, ImColor(0, 255, 0), BotBoneSize);
+                    }
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Head.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Chest.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Pelvis.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Left_Shoulder.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Shoulder.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Left_Shoulder.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Chest.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Right_Shoulder.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Shoulder.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Right_Shoulder.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Left_Shoulder.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Shoulder.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Left_Elbow.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Elbow.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Left_Elbow.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Right_Shoulder.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Shoulder.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Right_Elbow.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Elbow.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Right_Elbow.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Left_Elbow.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Elbow.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Left_Wrist.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Wrist.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Left_Wrist.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Right_Elbow.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Elbow.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Right_Wrist.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Wrist.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Right_Wrist.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Left_Thigh.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Thigh.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Left_Thigh.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Pelvis.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Right_Thigh.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Thigh.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Right_Thigh.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Left_Thigh.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Thigh.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Left_Knee.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Knee.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Left_Knee.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Right_Thigh.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Thigh.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Right_Knee.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Knee.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Right_Knee.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Left_Knee.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Knee.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Left_Ankle.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Left_Ankle.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Left_Ankle.CanSee);
+                    DrawBone({ temp->mPlayerArray.mPlayer[i].Right_Knee.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Knee.ScreenPos.y }, { temp->mPlayerArray.mPlayer[i].Right_Ankle.ScreenPos.x, temp->mPlayerArray.mPlayer[i].Right_Ankle.ScreenPos.y }, temp->mPlayerArray.mPlayer[i].Right_Ankle.CanSee);
+                }
+
+                if (DrawIo[4] || DrawIo[6]) {
+                    // 信息
+                    if (!temp->mPlayerArray.mPlayer[i].IsBot) {
+                        DrawHealth({ temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x - temp->mPlayerArray.mPlayer[i].w, top - 10 }, temp->mPlayerArray.mPlayer[i].w * 2, temp->mPlayerArray.mPlayer[i].Health, temp->mPlayerArray.mPlayer[i].TeamID, temp->mPlayerArray.mPlayer[i].PlayerName);
+                    }
+                    else {
+                        DrawHealth({ temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x - temp->mPlayerArray.mPlayer[i].w, top - 10 }, temp->mPlayerArray.mPlayer[i].w * 2, temp->mPlayerArray.mPlayer[i].Health, temp->mPlayerArray.mPlayer[i].TeamID, "RoBot");
+                    }
+                }
+
+                if (DrawIo[5]) {
+                    // 距离
+                    string str = to_string((int)temp->mPlayerArray.mPlayer[i].Distance);
+                    str += " m";
+                    const char* s = str.c_str();
+                    DrawTf.DrawStrokeText(temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x - strlen(s) - temp->mPlayerArray.mPlayer[i].w / 2, bottom + 15, ImVec4{ 255.f / 255.f,200.f / 255.f,0.f / 255.f,255.f / 255.f }, s);
+                }
             }
-			
-			if (DrawIo[4] || DrawIo[6]) {
-				// 信息
-				if (!temp->mPlayerArray.mPlayer[i].IsBot) {
-					DrawHealth({temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x - temp->mPlayerArray.mPlayer[i].w, top - 10}, temp->mPlayerArray.mPlayer[i].w * 2, temp->mPlayerArray.mPlayer[i].Health, temp->mPlayerArray.mPlayer[i].TeamID, temp->mPlayerArray.mPlayer[i].PlayerName);
-				} else {
-					DrawHealth({temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x - temp->mPlayerArray.mPlayer[i].w, top - 10}, temp->mPlayerArray.mPlayer[i].w * 2, temp->mPlayerArray.mPlayer[i].Health, temp->mPlayerArray.mPlayer[i].TeamID, "RoBot");
-				}
-			}
-			
-			if (DrawIo[5]) {
-            	// 距离
-				string str = to_string((int) temp->mPlayerArray.mPlayer[i].Distance);    
-				str += " m";
-				const char* s = str.c_str();			
-				DrawTf.DrawStrokeText(temp->mPlayerArray.mPlayer[i].Head.ScreenPos.x - strlen(s) - temp->mPlayerArray.mPlayer[i].w / 2, bottom + 15, ImVec4{255.f/255.f,200.f/255.f,0.f/255.f,255.f/255.f}, s);
-            }		
-		} else {
-			if (DrawIo[8]) {             
-				tm = 120.f/255.f;
-				float cameras = temp->matrix[3] * temp->mPlayerArray.mPlayer[i].Pos.x + temp->matrix[7] * temp->mPlayerArray.mPlayer[i].Pos.y + temp->matrix[11] * temp->mPlayerArray.mPlayer[i].Pos.z + temp->matrix[15]; 
-				if (!temp->mPlayerArray.mPlayer[i].IsBot) {				
-					OffScreen(temp->mPlayerArray.mPlayer[i].ScreenPos, cameras, ImColor(arr[temp->mPlayerArray.mPlayer[i].TeamID%length]), NumIo[3] + 20 + temp->mPlayerArray.mPlayer[i].Distance * 0.3);
-				} else {
-					OffScreen(temp->mPlayerArray.mPlayer[i].ScreenPos, cameras, ImColor(255, 255, 255, 255), NumIo[3] + 20 + temp->mPlayerArray.mPlayer[i].Distance * 0.3);
-				}
+            else {
+                if (DrawIo[8]) {
+                    tm = 120.f / 255.f;
+                    float cameras = temp->matrix[3] * temp->mPlayerArray.mPlayer[i].Pos.x + temp->matrix[7] * temp->mPlayerArray.mPlayer[i].Pos.y + temp->matrix[11] * temp->mPlayerArray.mPlayer[i].Pos.z + temp->matrix[15];
+                    if (!temp->mPlayerArray.mPlayer[i].IsBot) {
+                        OffScreen(temp->mPlayerArray.mPlayer[i].ScreenPos, cameras, ImColor(arr[temp->mPlayerArray.mPlayer[i].TeamID % length]), NumIo[3] + 20 + temp->mPlayerArray.mPlayer[i].Distance * 0.3);
+                    }
+                    else {
+                        OffScreen(temp->mPlayerArray.mPlayer[i].ScreenPos, cameras, ImColor(255, 255, 255, 255), NumIo[3] + 20 + temp->mPlayerArray.mPlayer[i].Distance * 0.3);
+                    }
+                }
             }
-		}
-		
-		if (temp->mPlayerArray.mPlayer[i].IsBot) {
-			BotCount ++;
-		} else {
-			PlayerCount ++;
-		}
-	}
+
+            if (temp->mPlayerArray.mPlayer[i].IsBot) {
+                BotCount++;
+            }
+            else {
+                PlayerCount++;
+            }
+        }
+    }
 	
 	MaxPlayerCount = AimCount;
 	
@@ -1156,9 +1164,9 @@ void Rendering(bool *flag)
     }
     ImGui_ImplAndroid_NewFrame(init_screen_x, init_screen_y);
     ImGui::NewFrame();
-	//Draw_Main(ImGui::GetForegroundDrawList());
+	Draw_Main(ImGui::GetForegroundDrawList());
 	if (IsBall) {
-    	if (ImGui::Begin("Lucky[内核测试]", &IsBall, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse))
+    	if (ImGui::Begin("cheat[内核测试]", &IsBall, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse))
     	{
 			if (!isSetSize) {
     			ImGui::SetWindowSize({1150, 700});
@@ -1184,16 +1192,16 @@ void Rendering(bool *flag)
     			{
     				show_ChildMenu = 3;					
     			}			
-    			ImGui::Text("by 闸鸡");             
+    			ImGui::Text("by sanqiu");             
     			ImGui::EndChild();
     		}
     		ImGui::SameLine();
     		if (!show_ChildMenu) {
     			if (ImGui::BeginChild("##绘图", ImVec2(0, 0), false,  ImGuiWindowFlags_NavFlattened)) 
     			{
-    				ImGui::Text("-欢迎使用 Lucky \n - 耗时 %.3fms/真实帧率 (%.1fFPS)", 1000.0f / io.Framerate, io.Framerate);
+    				ImGui::Text("- 耗时 %.3fms/真实帧率 (%.1fFPS)", 1000.0f / io.Framerate, io.Framerate);
     				
-    				ImGui::TextColored(ImGui::GetStyle().Colors[ImGuiCol_Text], "- 前设备分辨率为: %dx%d\n- 贡献者名单: 东方 假如可以 逼养王凯 \n- 开发者名单: 作者-飞蓝 安卓AOSP-泓清", screen_x, screen_y);			
+    				ImGui::TextColored(ImGui::GetStyle().Colors[ImGuiCol_Text], "- 前设备分辨率为: %dx%d\n- 贡献者名单:  \n- 开发者名单: ", screen_x, screen_y);			
     				
     				ImGui::Text("##FPS调整");
     				

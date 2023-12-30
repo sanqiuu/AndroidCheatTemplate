@@ -86,14 +86,11 @@ int init_egl(int _screen_x,int _screen_y, bool log)
     }
     if(log)
 		printf("eglCreateContext ok\n");
-		
     void* sy = get_createNativeWindow();
-	
 	string strbool = "是";
     //cout << endl << "是否开启防录屏(是/否):";
     //cin >> strbool;
 	//cout << endl;
-		
     if (strbool == "是")
     {
 	    createNativeWindow = (ANativeWindow *(*)(const char *, uint32_t, uint32_t, uint32_t, uint32_t, bool))(sy);
@@ -105,7 +102,6 @@ int init_egl(int _screen_x,int _screen_y, bool log)
 	
    // createNativeWindow = (NativeWindowType (*)(const char*, uint32_t, uint32_t))(sy);
    // native_window = createNativeWindow("Ssage",_screen_x, _screen_y);
-   
     surface = eglCreateWindowSurface(display, config, native_window, nullptr);
     if (surface == EGL_NO_SURFACE) {
         printf("eglCreateWindowSurface  error = %u\n", glGetError());

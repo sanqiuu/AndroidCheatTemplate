@@ -17,7 +17,7 @@ void* get_createNativeWindow() {
     void *handle = nullptr;// 动态库方案
     if (!handle) {
 //        handle = dlblob(&native_surface_test, sizeof(native_surface_test)); // 测试
-        printf("android api level:%d\n", get_android_api_level());
+        printf("[+] android api level:%d\n", get_android_api_level());
         if (get_android_api_level() == 33) { // 安卓13支持
             exec_native_surface("settings put global block_untrusted_touches 0");
 #ifdef __aarch64__

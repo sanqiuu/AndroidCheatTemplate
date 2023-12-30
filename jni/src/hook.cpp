@@ -33,6 +33,7 @@
 #include <hook.h>
 #include <draw.h>
 char* g_game_name = "com.sofunny.Sausage";
+char* g_game_lib = "libUE4.so";
 void getUTF8(UTF8 * buf, long namepy)
 {
     UTF16 buf16[16] = { 0 };
@@ -98,11 +99,11 @@ void hack_thread()
 	
     memset(matrix, 0, 16);
 	
-	libUE4 = driver->getModuleBase("libUE4.so");
+	libUE4 = driver->getModuleBase(g_game_lib);
 	
 	while (!libUE4)
 	{
-		libUE4 = driver->getModuleBase("libUE4.so");
+		libUE4 = driver->getModuleBase(g_game_lib);
 		sleep(1);
 	}
 	
