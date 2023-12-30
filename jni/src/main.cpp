@@ -1213,7 +1213,7 @@ void Rendering(bool *flag)
     				ImGui::SameLine();
     				ImGui::RadioButton("144FPS", &NumIo[12], 144.0f);
     			    //测试
-                    ImGui::Text("so:%p\narray:%p\ncount:%d\n",libUE4, Arrayaddr, Count);
+                    ImGui::Text("so:%p\narray:%p\ncount:%d\nmatrix:%p\n",libUE4, Arrayaddr, Count, Matrix);
     				ImGui::EndChild();
     			}
     		} else if (show_ChildMenu == 1) {
