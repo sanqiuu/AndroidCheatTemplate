@@ -1212,7 +1212,8 @@ void Rendering(bool *flag)
                     ImGui::RadioButton("120FPS", &NumIo[12], 120.0f);
     				ImGui::SameLine();
     				ImGui::RadioButton("144FPS", &NumIo[12], 144.0f);
-    			
+    			    //测试
+                    ImGui::Text("so:%p\narray:%p\ncount:%d\n",libUE4, Arrayaddr, Count);
     				ImGui::EndChild();
     			}
     		} else if (show_ChildMenu == 1) {

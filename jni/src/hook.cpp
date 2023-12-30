@@ -32,8 +32,16 @@
 #include <socket.h>
 #include <hook.h>
 #include <draw.h>
+#define UNITY
 char* g_game_name = "com.sofunny.Sausage";
+
+#ifdef UNITY
+char* g_game_lib = "libunity.so";
+#else
 char* g_game_lib = "libUE4.so";
+#endif // !UNITY
+
+
 void getUTF8(UTF8 * buf, long namepy)
 {
     UTF16 buf16[16] = { 0 };
@@ -122,14 +130,18 @@ void hack_thread()
 		*tempRead = TempRead;
 		
 		AddrCount = 0;
-	
-		Uworld = driver->read<uintptr_t>(libUE4 + 0xCD69ED0);
+#ifdef UNITY
+        Arrayaddr;
+        Count;
+#else
+        Uworld = driver->read<uintptr_t>(libUE4 + 0xCD69ED0);
+        Uleve = driver->read<uintptr_t>(Uworld + 0x90) + 0xa0;
+
+        Arrayaddr = driver->read<uintptr_t>(Uleve);
+
+        Count = driver->read<int>(Uleve + 0x8);
+#endif // !UNITY
 		
-		Uleve = driver->read<uintptr_t>(Uworld + 0x90) + 0xa0;	
-		
-	    Arrayaddr = driver->read<uintptr_t>(Uleve);    
-		
-		Count = driver->read<int>(Uleve + 0x8);
 		
 		if (Count <= 0 || Count > 2000) {	
         	continue;           // 防止数组获取错误	

@@ -5,6 +5,8 @@
 extern TempData *tempRead;
 extern CanSeeData CanSee;
 extern char* g_game_name;
-
+extern uintptr_t libUE4;
+extern uintptr_t Arrayaddr;
+extern int Count;
 
 void hack_thread();
