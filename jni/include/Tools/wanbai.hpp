@@ -168,8 +168,9 @@ public:
     }
 
     ~CDriver() {
-        if (fd > 0)
-            close(fd);
+        /*if (fd > 0)
+            close(fd);*/
+        pDriver->CloseHandle(hprocess);
     }
 
     bool initialize(char* packageName) {
