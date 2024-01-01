@@ -35,12 +35,6 @@
 #define UNITY
 char* g_game_name = "com.sofunny.Sausage";
 
-#ifdef UNITY
-char* g_game_lib = "libunity.so";
-#else
-char* g_game_lib = "libUE4.so";
-#endif // !UNITY
-
 
 void getUTF8(UTF8 * buf, long namepy)
 {
@@ -106,12 +100,20 @@ void hack_thread()
 	
 	
     memset(matrix, 0, 16);
+#ifdef UNITY
+    libUE4 = driver->getModuleBase("libunity.so",2);
+#else
+    libUE4 = driver->getModuleBase("libUE4.so",3);
+#endif // !UNITY	
 	
-	libUE4 = driver->getModuleBase(g_game_lib);
 	
 	while (!libUE4)
 	{
-		libUE4 = driver->getModuleBase(g_game_lib);
+#ifdef UNITY
+        libUE4 = driver->getModuleBase("libunity.so", 2);
+#else
+        libUE4 = driver->getModuleBase("libUE4.so", 3);
+#endif // !UNITY
 		sleep(1);
 	}
 	
@@ -131,8 +133,8 @@ void hack_thread()
 		
 		AddrCount = 0;
 #ifdef UNITY
-        Arrayaddr;
-        Count;
+        Arrayaddr = 0;
+        Count = 0;
 #else
         Uworld = driver->read<uintptr_t>(libUE4 + 0xCD69ED0);
         Uleve = driver->read<uintptr_t>(Uworld + 0x90) + 0xa0;
@@ -146,9 +148,8 @@ void hack_thread()
 		if (Count <= 0 || Count > 2000) {	
         	continue;           // 防止数组获取错误	
 		}
-		
-		Matrix = driver->read<uintptr_t>(driver->read<uintptr_t>(libUE4 + 0xCD3DBB8) + 0x20) + 0x270;	
-		
+        Matrix = driver->read<uintptr_t>(driver->read<uintptr_t>(libUE4 + 0xCD3DBB8) + 0x20) + 0x270;
+
 		oneself = driver->read<uintptr_t>(driver->read<uintptr_t>(driver->read<uintptr_t>(driver->read<uintptr_t>(Uworld + 0x98) + 0x88) + 0x30) + 0x2ae8);
 		MyTeam = driver->read<int>(oneself + 0xa48);		
 		

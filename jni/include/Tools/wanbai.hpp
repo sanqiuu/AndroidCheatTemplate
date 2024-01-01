@@ -264,7 +264,31 @@ public:
         for (DRIVER_REGION_INFO rinfo : vMaps) {
             if (strstr(rinfo.name, dll_name) != 0) {
                 dll_base = rinfo.baseaddress;
+                //printf("[%p][%s]\n", rinfo.baseaddress, rinfo.name);
                 break;
+            }
+        }
+        return dll_base;
+    }
+
+    uintptr_t getModuleBase(const char* dll_name, int index)
+    {
+        std::vector<DRIVER_REGION_INFO> vMaps;
+        BOOL bOutListCompleted;
+        BOOL b = pDriver->VirtualQueryExFull(this->hprocess, FALSE, vMaps, bOutListCompleted);
+        if (!vMaps.size()) {
+            return 0;
+        }
+        uintptr_t  dll_base = 0;
+        int block_flag = 1;
+        //显示进程内存块地址列表
+        for (DRIVER_REGION_INFO rinfo : vMaps) {
+            if (strstr(rinfo.name, dll_name) != 0) {
+                if (block_flag == index){
+                    dll_base = rinfo.baseaddress;
+                    break;
+                }
+                block_flag++;
             }
         }
         return dll_base;
